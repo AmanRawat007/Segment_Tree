@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+vector <long long int> segTree[4*100000];
+vector <long long int> a(100001);
+
+void build_tree (long long int rangeLeft, long long int rangeRight, long long int index)
+{
+    if (rangeLeft == rangeRight) {
+        segTree[index].push_back(a[rangeLeft]);
+        return;
+    }
+    long long int mid = (rangeLeft + rangeRight) / 2;
+    build_tree(rangeLeft, mid, 2*index);
+    build_tree(mid+1, rangeRight, 2*index+1);
+    merge(segTree[2*index].begin(), segTree[2*index].end(), segTree[2*index+1].begin(), segTree[2*index+1].end(), back_inserter(segTree[index]));
+}
+
+long long int query(long long  int cur,long long  int l,long long  int r,long long  int x,long long  int y,long long  int k)
+{
+      //cout<<"range "<<l<<" "<<r<<" cur "<<cur<<endl;
+      if( r < x || l > y )
+        return 0; 
+      if( x<=l && r<=y )
+      {
+         //cout<<"here at "<<cur<<endl;
+         for(int i=0;i<segTree[cur].size() && segTree[cur][i]<=k ;i++)
+         {
+             cout<<segTree[cur][i]<<" ";
+         }
+         return upper_bound(segTree[cur].begin(),segTree[cur].end(),k)-segTree[cur].begin();
+      }
+      long long int mid=(l+r)/2;
+      //cout<<"hi\n";
+      return query(2*cur,l,mid,x,y,k)+query(2*cur+1,mid+1,r,x,y,k);
+}
+
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        for(auto &elem: segTree) elem.clear();
+        long long int n,s;
+        cin>>n>>s;
+        for(int i=0;i<n;i++)  cin>>a[i];
+        build_tree(0,n-1,1);
+        // for(int i=0;i<15;i++)
+        // {
+        //     cout<<"for i ="<<i<<" : ";
+        //     for(int j=0;j<segTree[i].size();j++)
+        //       cout<<segTree[i][j]<<" ";
+        //     cout<<endl;
+        // }
+        cout<<endl<<query(1,0,7,1,6,8)<<endl<<"------------------------\n";
+        //query(tree starting index,array start ,array end, l,r,n)
+    }
+}
+
+
+
+
+
+//1
+//8
+//4 2 8 1 4 3 8 1
